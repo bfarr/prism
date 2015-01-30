@@ -5,6 +5,16 @@ from matplotlib import animation
 import triangle
 
 
+def inline_ipynb():
+    """
+    Inline animations in ipython notebooks.
+    """
+    from matplotlib import animation
+    from IPython.display import HTML
+
+    animation.Animation._repr_html_ = anim_to_html
+
+
 def anim_to_html(anim):
     """
     Function to help with inline animations in ipython notebooks:

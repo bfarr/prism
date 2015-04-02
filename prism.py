@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import numpy as np
 from matplotlib import animation
+from matplotlib.pyplot import close
 
 import triangle
 
@@ -109,6 +110,10 @@ def corner(data_cube, labels=None, truths=None,
     anim = animation.FuncAnimation(fig, update_corner,
                                    frames=xrange(len(data_cube)), blit=True,
                                    fargs=(data_cube, fig, bins, truths))
+
+    # Close the window and return just the animation
+    close(fig)
+
     return anim
 
 

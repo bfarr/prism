@@ -45,11 +45,14 @@ def anim_to_html(anim):
     return VIDEO_TAG.format(anim._encoded_video)
 
 
-def corner(data_cube, labels=None, truths=None,
+def corner(data_cube, color='k', ms=2.0,
+           labels=None, truths=None,
            samps_per_frame=10, fps=30,
-           rough_length=10.0, outname='corner.mp4'):
+           rough_length=10.0, outname='corner.mp4',
+           hist_kwargs=None, **kwargs):
     """
-    Animate a triangle corner plot.
+    Animate a triangle corner plot.  All kwargs are
+    passed to ``triangle.corner()``.
 
     :param data_cube:
     A ``T x N x dim`` array, containing ``T`` timesteps of ``N`` evolving
@@ -70,10 +73,20 @@ def corner(data_cube, labels=None, truths=None,
     :param rough_length: (optional)
     A rough request for the duration (in seconds) of the animation.
 
-    : param outname: (optional)
+    :param outname: (optional)
     The name to use for saving the animation.
 
+    :param hist_kwargs: (optional)
+    Keyword arguments to be passed to ``hist()``.
+
     """
+    if hist_kwargs is None:
+        hist_kwargs = dict()
+
+    hist_kwargs["color"] = hist_kwargs.get("color", color)
+    hist_kwargs["histtype"] = hist_kwargs.get("histtype", "step")
+    hist_kwargs["normed"] = hist_kwargs.get("normed", True)
+
     nframes, nwalkers, ndim = data_cube.shape
 
     final_bins = 50  # number of bins covering final posterior
@@ -93,11 +106,18 @@ def corner(data_cube, labels=None, truths=None,
         ymaxs.append(1.1*max(hist))
 
     # Use the first time sample as the initial frame
-    fig = triangle.corner(data_cube[0], labels=labels,
-                          plot_contours=False, truths=truths, extents=extremes)
+    fig = triangle.corner(data_cube[0], color=color, labels=labels,
+                          plot_contours=False, truths=truths, extents=extremes,
+                          hist_kwargs=hist_kwargs, **kwargs)
     axes = np.array(fig.axes).reshape((ndim, ndim))
     for x in range(ndim):
         axes[x, x].set_ylim(top=ymaxs[x])
+
+        # Set marker sizes
+        for y in range(x):
+            ax = axes[x, y]
+            line = ax.get_lines()[0]
+            line.set_markersize(ms)
 
     # Determine number of frames
     thin_factor = int(nframes/rough_length)/fps
@@ -109,7 +129,8 @@ def corner(data_cube, labels=None, truths=None,
     # Make the movie
     anim = animation.FuncAnimation(fig, update_corner,
                                    frames=xrange(len(data_cube)), blit=True,
-                                   fargs=(data_cube, fig, bins, truths))
+                                   fargs=(data_cube, fig, bins,
+                                          truths, hist_kwargs))
 
     # Close the window and return just the animation
     close(fig)
@@ -117,7 +138,7 @@ def corner(data_cube, labels=None, truths=None,
     return anim
 
 
-def update_corner(i, data, fig, bins, truths=None):
+def update_corner(i, data, fig, bins, truths=None, hist_kwargs=None):
     """
     Update a corner plot for frame ``i`` of animation.
     """
@@ -137,7 +158,7 @@ def update_corner(i, data, fig, bins, truths=None):
             ax.patches[0].remove()
 
         ax.hist(data[i, :, x], range=xlim,
-                bins=bins[x], histtype='step', normed=True, color='k')
+                bins=bins[x], **hist_kwargs)
         ax.set_ylim(*ylim)
         if truths is not None:
                 ax.axvline(truths[x], color="#4682b4")

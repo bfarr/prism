@@ -107,7 +107,8 @@ def corner(data_cube, color='k', ms=2.0,
 
     # Use the first time sample as the initial frame
     fig = triangle.corner(data_cube[0], color=color, labels=labels,
-                          plot_contours=False, truths=truths, extents=extremes,
+                          plot_contours=False, plot_density=False,
+                          truths=truths, range=extremes,
                           hist_kwargs=hist_kwargs, **kwargs)
     axes = np.array(fig.axes).reshape((ndim, ndim))
     for x in range(ndim):

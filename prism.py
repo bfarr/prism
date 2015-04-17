@@ -128,10 +128,10 @@ def corner(data_cube, color='k', ms=2.0,
     samps_per_sec = fps * samps_per_frame
 
     # Make the movie
-    anim = animation.FuncAnimation(fig, update_corner,
+    anim = animation.FuncAnimation(fig, iterate_corner,
                                    frames=xrange(len(data_cube)), blit=True,
                                    fargs=(data_cube, fig, bins,
-                                          truths, hist_kwargs))
+                                          truths, ymaxs, hist_kwargs))
 
     # Close the window and return just the animation
     close(fig)
@@ -139,9 +139,9 @@ def corner(data_cube, color='k', ms=2.0,
     return anim
 
 
-def update_corner(i, data, fig, bins, truths=None, hist_kwargs=None):
+def update_corner(data, fig, bins=50, truths=None, ymaxs=None, **kwargs):
     """
-    Update a corner plot for frame ``i`` of animation.
+    Update a corner plot with the given `data`.
     """
     ndim = data.shape[-1]
     axes = np.array(fig.axes).reshape((ndim, ndim))
@@ -158,17 +158,32 @@ def update_corner(i, data, fig, bins, truths=None, hist_kwargs=None):
         while len(ax.patches) > 0:
             ax.patches[0].remove()
 
-        ax.hist(data[i, :, x], range=xlim,
-                bins=bins[x], **hist_kwargs)
-        ax.set_ylim(*ylim)
+        try:
+            n, _, _ = ax.hist(data[:, x], range=xlim, bins=bins[x], **kwargs)
+        except TypeError:
+            n, _, _ = ax.hist(data[:, x], range=xlim, bins=bins, **kwargs)
+
+        if ymaxs is None:
+            ax.set_ylim(ymax=n.max())
+        else:
+            ax.set_ylim(ymax=ymaxs[x])
+
         if truths is not None:
-                ax.axvline(truths[x], color="#4682b4")
+            ax.axvline(truths[x], color="#4682b4")
 
     # Update scatter plots
     for x in range(1, ndim):
         for y in range(x):
             ax = axes[x, y]
             line = ax.get_lines()[0]
-            line.set_data(data[i, :, y], data[i, :, x])
+            line.set_data(data[:, y], data[:, x])
 
     return fig,
+
+
+def iterate_corner(i, data_cube, fig, bins=50, truths=None,
+                   ymaxs=None, hist_kwargs=None):
+    """
+    Update a corner plot for frame ``i`` of animation.
+    """
+    return update_corner(data_cube[i], fig, bins, truths, ymaxs, **hist_kwargs)

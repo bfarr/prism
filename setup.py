@@ -8,7 +8,7 @@ except ImportError:
     from distutils.core import setup
 
 setup(
-    name='prism',
+    name='prism_plot',
     version='1.0',
     description="An animated wrapping of Dan Foreman-Mackey's triangle.py.",
     author='Ben Farr',

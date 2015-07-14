@@ -40,7 +40,12 @@ def anim_to_html(anim):
         with NamedTemporaryFile(suffix='.mp4') as f:
             anim.save(f.name, fps=30, extra_args=['-vcodec', 'libx264'])
             video = open(f.name, "rb").read()
-        anim._encoded_video = video.encode("base64")
+        try:
+            anim._encoded_video = video.encode("base64")
+        except AttributeError:
+            # Handle encoding differently if using python3
+            import base64
+            anim._encoded_video = base64.b64encode(video).decode('utf-8')
 
     return VIDEO_TAG.format(anim._encoded_video)
 
@@ -108,6 +113,7 @@ def corner(data_cube, color='k', ms=2.0,
     # Use the first time sample as the initial frame
     fig = triangle.corner(data_cube[0], color=color, labels=labels,
                           plot_contours=False, plot_density=False,
+                          plot_datapoints=True,
                           truths=truths, range=extremes,
                           hist_kwargs=hist_kwargs, **kwargs)
     axes = np.array(fig.axes).reshape((ndim, ndim))
@@ -129,7 +135,7 @@ def corner(data_cube, color='k', ms=2.0,
 
     # Make the movie
     anim = animation.FuncAnimation(fig, iterate_corner,
-                                   frames=xrange(len(data_cube)), blit=True,
+                                   frames=range(len(data_cube)), blit=True,
                                    fargs=(data_cube, fig, bins,
                                           truths, ymaxs, hist_kwargs))
 

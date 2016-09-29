@@ -3,7 +3,11 @@ import numpy as np
 from matplotlib import animation
 from matplotlib.pyplot import close
 
-import triangle
+try:
+    import corner as triangle
+except ImportError:
+    # Try to import corner under its old name
+    import triangle
 
 
 def inline_ipynb():

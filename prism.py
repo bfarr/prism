@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+from __future__ import division
+
 import numpy as np
 from matplotlib import animation
 from matplotlib.pyplot import close
@@ -107,7 +110,7 @@ def corner(data_cube, color='k', ms=2.0,
     for x in range(ndim):
         extremes.append((data_cube[..., x].min(), data_cube[..., x].max()))
         dx = (data_cube[-1, :, x].max() - data_cube[-1, :, x].min())/final_bins
-        nbins = int(np.diff(extremes[x])[0]/dx)
+        nbins = np.diff(extremes[x])[0]//dx
         these_bins = np.linspace(extremes[x][0],
                                  extremes[x][1], nbins + 1)[:-1]
         bins.append(these_bins)
@@ -131,7 +134,7 @@ def corner(data_cube, color='k', ms=2.0,
             line.set_markersize(ms)
 
     # Determine number of frames
-    thin_factor = int(nframes/rough_length)/fps
+    thin_factor = (nframes//rough_length)//fps
     if thin_factor > 1:
         data_cube = data_cube[::thin_factor]
         samps_per_frame *= thin_factor

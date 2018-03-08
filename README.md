@@ -1,6 +1,6 @@
 # prism
 An animated wrapping of [Dan Foreman-Mackey](https://github.com/dfm)'s
-[triangle.py](https://github.com/dfm/triangle.py).
+[corner.py](https://github.com/dfm/corner.py).
 
 ## Usage
 ``prism`` is handy for watching ensembles burn in.  Pretend below that

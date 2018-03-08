@@ -97,7 +97,7 @@ def corner(data_cube, color='k', ms=2.0,
 
     hist_kwargs["color"] = hist_kwargs.get("color", color)
     hist_kwargs["histtype"] = hist_kwargs.get("histtype", "step")
-    hist_kwargs["normed"] = hist_kwargs.get("normed", True)
+    hist_kwargs["density"] = hist_kwargs.get("density", True)
 
     nframes, nwalkers, ndim = data_cube.shape
 
@@ -114,7 +114,7 @@ def corner(data_cube, color='k', ms=2.0,
         these_bins = np.linspace(extremes[x][0],
                                  extremes[x][1], nbins + 1)[:-1]
         bins.append(these_bins)
-        hist, _ = np.histogram(data_cube[-1, :, x], bins=bins[-1], normed=True)
+        hist, _ = np.histogram(data_cube[-1, :, x], bins=bins[-1], density=True)
         ymaxs.append(1.1*max(hist))
 
     # Use the first time sample as the initial frame

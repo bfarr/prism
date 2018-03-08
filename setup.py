@@ -12,7 +12,7 @@ setup(
     version='1.4',
     description="An animated wrapping of Dan Foreman-Mackey's triangle.py.",
     author='Ben Farr',
-    author_email='farr@uchicago.edu',
+    author_email='bfarr@uoregon.edu',
     url='https://github.com/bfarr/prism',
     include_package_data=True,
     py_modules=['prism'],

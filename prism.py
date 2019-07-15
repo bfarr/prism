@@ -134,7 +134,7 @@ def corner(data_cube, color='k', ms=2.0,
             line.set_markersize(ms)
 
     # Determine number of frames
-    thin_factor = (nframes//rough_length)//fps
+    thin_factor = int((nframes//rough_length)//fps)
     if thin_factor > 1:
         data_cube = data_cube[::thin_factor]
         samps_per_frame *= thin_factor

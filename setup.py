@@ -9,7 +9,7 @@ except ImportError:
 
 setup(
     name='prism_plot',
-    version='1.4',
+    version='1.5',
     description="An animated wrapping of Dan Foreman-Mackey's triangle.py.",
     author='Ben Farr',
     author_email='bfarr@uoregon.edu',
